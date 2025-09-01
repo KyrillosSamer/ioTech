@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// دالة بسيطة لتحويل Rich Text (Strapi blocks) إلى JSX
+//func Rich Text (Strapi blocks) to JSX
 function renderRichText(blocks) {
   if (!Array.isArray(blocks)) return null;
 

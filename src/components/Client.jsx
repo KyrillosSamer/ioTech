@@ -8,7 +8,7 @@ export default function FeedBack() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const BASE_URL = "http://localhost:1337"; 
 
-  // جلب العملاء من Strapi
+  // client from Strapi
   useEffect(() => {
     async function fetchClients() {
       try {

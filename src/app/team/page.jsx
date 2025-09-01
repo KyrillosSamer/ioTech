@@ -8,13 +8,13 @@ export default function TeamSection() {
   const [visibleCount, setVisibleCount] = useState(3);
   const [index, setIndex] = useState(0);
 
-  const BASE_URL = "http://localhost:1337"; // رابط Strapi
+  const BASE_URL = "http://localhost:1337"; 
 
-  // جلب البيانات من Strapi
+  //Fetch data from Strapi
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/teams?populate=image`); // صححت الاسم
+        const res = await fetch(`${BASE_URL}/api/teams?populate=image`); 
         if (!res.ok) throw new Error(`Failed to fetch team: ${res.status}`);
         const data = await res.json();
 
