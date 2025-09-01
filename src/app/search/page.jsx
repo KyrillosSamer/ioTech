@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = "force-dynamic";
+
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -19,7 +21,6 @@ export default function SearchPage() {
       setLoading(true);
 
       try {
-        // Fetch teams and services
         const [teamRes, serviceRes] = await Promise.all([
           fetch(`${BASE_URL}/api/teams?populate=image`),
           fetch(`${BASE_URL}/api/services?populate=*`)
@@ -28,7 +29,6 @@ export default function SearchPage() {
         const teamData = await teamRes.json();
         const serviceData = await serviceRes.json();
 
-        // Format Team
         const formattedTeam = (teamData.data || []).map(member => ({
           id: member.id,
           name: member.name || "No Name",
@@ -40,7 +40,6 @@ export default function SearchPage() {
               : "/Imgs/person.png"
         }));
 
-        // Format Services
         const formattedServices = (serviceData.data || []).map(service => ({
           id: service.id,
           title: service.attributes?.title || "No Title",
@@ -51,13 +50,12 @@ export default function SearchPage() {
             .trim() || "No Description"
         }));
 
-        // Filter by query
         const lowerQuery = query.toLowerCase();
-        setTeamResults(formattedTeam.filter(member => 
-          member.name.toLowerCase().includes(lowerQuery) || 
+        setTeamResults(formattedTeam.filter(member =>
+          member.name.toLowerCase().includes(lowerQuery) ||
           member.position.toLowerCase().includes(lowerQuery)
         ));
-        setServiceResults(formattedServices.filter(service => 
+        setServiceResults(formattedServices.filter(service =>
           service.title.toLowerCase().includes(lowerQuery)
         ));
 
