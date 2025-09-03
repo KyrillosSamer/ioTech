@@ -1,36 +1,46 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useLanguage } from "../components/LanguageContext.jsx"; // Language context
+import { HeroData } from "@/lib/structuredData";
+import { useLanguage } from "./LanguageContext.jsx"; // Language context
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  data?: HeroData; // Accepts HeroData as prop
+}
+
+export default function HeroSection({ data }: HeroSectionProps) {
   const { language } = useLanguage(); // Get language from context
-  const [slides, setSlides] = useState([]);
+  const [slides, setSlides] = useState<HeroData[]>([]);
   const [current, setCurrent] = useState(0);
 
-  const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
   const isRTL = language === "AR";
 
   useEffect(() => {
+    // If data prop exists, use it for slides
+    if (data) {
+      setSlides([data]);
+      return;
+    }
+
+    // Otherwise, fetch from API
     async function fetchHero() {
       try {
         const locale = isRTL ? "ar" : "en";
-        const res = await fetch(`${BASE_URL}/api/heroes?populate=*&locale=${locale}`);
-        const data = await res.json();
+        const res = await fetch(
+          `https://tranquil-positivity-9ec86ca654.strapiapp.com/api/heroes?populate=*&locale=${locale}`
+        );
+        const result = await res.json();
 
-        if (!data?.data || !Array.isArray(data.data)) {
-          console.error("API response unexpected:", data);
-          return;
-        }
+        if (!result?.data || !Array.isArray(result.data)) return;
 
-        const heroData = data.data.map((item) => {
+        const heroData = result.data.map((item: any) => {
           const attrs = item;
 
           return {
             title: attrs.title || "",
             description: Array.isArray(attrs.description)
               ? attrs.description
-                  .map((block) =>
-                    block.children.map((child) => child.text).join(" ")
+                  .map((block: any) =>
+                    block.children.map((child: any) => child.text).join(" ")
                   )
                   .join("\n")
               : "",
@@ -53,7 +63,7 @@ export default function HeroSection() {
     }
 
     fetchHero();
-  }, [language]);
+  }, [language, data, isRTL]);
 
   // Auto slider every 5 seconds
   useEffect(() => {
