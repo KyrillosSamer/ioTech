@@ -11,6 +11,20 @@ interface Client {
   img: string;
 }
 
+// تعريف نوع البيانات القادمة من Strapi لتجنب استخدام any
+interface StrapiClient {
+  id: number;
+  name?: string;
+  position?: string;
+  feedback?: Array<{
+    children: Array<{ text: string }>;
+  }>;
+  image?: Array<{
+    formats?: { small?: { url?: string } };
+    url?: string;
+  }>;
+}
+
 export default function FeedBack() {
   const { language } = useLanguage(); 
   const [clients, setClients] = useState<Client[]>([]);
@@ -24,17 +38,15 @@ export default function FeedBack() {
         const res = await fetch(`${BASE_URL}/api/clients?populate=image&locale=${locale}`);
         const data = await res.json();
 
-        const formattedClients: Client[] = data?.data?.map((item: any) => ({
+        const formattedClients: Client[] = data?.data?.map((item: StrapiClient) => ({
           name: item?.name || "No Name",
           position: item?.position || "No Position",
           feedback: item?.feedback
-            ?.map((f: any) => f.children.map((c: any) => c.text).join(''))
+            ?.map(f => f.children.map(c => c.text).join(''))
             .join('\n') || "No Feedback",
           img: item?.image?.[0]?.formats?.small?.url
-            ? item.image[0].formats.small.url
-            : item?.image?.[0]?.url
-              ? item.image[0].url
-              : "/Imgs/person.png"
+            || item?.image?.[0]?.url
+            || "/Imgs/person.png"
         })) || [];
 
         setClients(formattedClients);
@@ -86,7 +98,7 @@ export default function FeedBack() {
         />
 
         <div className={`w-full md:w-[728px] ${isRTL ? "order-1 md:order-2" : "order-2"}`}>
-          <p className="opacity-60 mb-4 sm:mb-6 text-base sm:text-[24px]">"{client.feedback}"</p>
+          <p className="opacity-60 mb-4 sm:mb-6 text-base sm:text-[24px]">{`"${client.feedback}"`}</p>
           <h5 className="text-xl sm:text-2xl font-semibold">{client.name}</h5>
           <p className="text-gray-300 text-sm sm:text-base">{client.position}</p>
         </div>

@@ -32,18 +32,20 @@ export default function TeamSection() {
         if (!res.ok) throw new Error(`Failed to fetch team: ${res.status}`);
         const data = await res.json();
 
-        const formattedTeam: TeamMember[] = data?.data?.map((member: any) => ({
-          id: member.id,
-          name: member.name || "No Name",
-          position: member.position || "No Position",
-          whatsapp: member.whatsapp || "#",
-          phone: member.phone || "#",
-          email: member.email || "#",
-          image:
-            member.image?.[0]?.formats?.small?.url ||
-            member.image?.[0]?.url ||
-            null
-        }));
+        const formattedTeam: TeamMember[] = (data?.data || []).map((member: any) => {
+          const imgObj = member.image?.[0];
+          const imageUrl = imgObj?.formats?.small?.url || imgObj?.url || null;
+
+          return {
+            id: member.id,
+            name: member.name || "No Name",
+            position: member.position || "No Position",
+            whatsapp: member.whatsapp || "#",
+            phone: member.phone || "#",
+            email: member.email || "#",
+            image: imageUrl
+          };
+        });
 
         setTeam(formattedTeam);
       } catch (error) {
@@ -52,6 +54,7 @@ export default function TeamSection() {
         setLoading(false);
       }
     };
+
     fetchTeam();
   }, [locale]);
 
