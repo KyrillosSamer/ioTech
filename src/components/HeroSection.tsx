@@ -7,6 +7,16 @@ interface HeroSectionProps {
   data?: HeroData; // Accepts HeroData as prop
 }
 
+interface HeroAPIResponse {
+  title?: string;
+  description?: { children: { text: string }[] }[];
+  backgroundImage?: {
+    url: string;
+    mime?: string;
+  };
+  image?: { url: string };
+}
+
 export default function HeroSection({ data }: HeroSectionProps) {
   const { language } = useLanguage(); // Get language from context
   const [slides, setSlides] = useState<HeroData[]>([]);
@@ -15,13 +25,11 @@ export default function HeroSection({ data }: HeroSectionProps) {
   const isRTL = language === "AR";
 
   useEffect(() => {
-    // If data prop exists, use it for slides
     if (data) {
       setSlides([data]);
       return;
     }
 
-    // Otherwise, fetch from API
     async function fetchHero() {
       try {
         const locale = isRTL ? "ar" : "en";
@@ -32,27 +40,25 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
         if (!result?.data || !Array.isArray(result.data)) return;
 
-        const heroData = result.data.map((item: any) => {
-          const attrs = item;
-
+        const heroData: HeroData[] = result.data.map((item: HeroAPIResponse) => {
           return {
-            title: attrs.title || "",
-            description: Array.isArray(attrs.description)
-              ? attrs.description
-                  .map((block: any) =>
-                    block.children.map((child: any) => child.text).join(" ")
+            title: item.title || "",
+            description: Array.isArray(item.description)
+              ? item.description
+                  .map((block) =>
+                    block.children.map((child) => child.text).join(" ")
                   )
                   .join("\n")
               : "",
-            background: attrs.backgroundImage
+            background: item.backgroundImage
               ? {
-                  url: attrs.backgroundImage.url,
-                  type: attrs.backgroundImage.mime?.startsWith("video")
+                  url: item.backgroundImage.url,
+                  type: item.backgroundImage.mime?.startsWith("video")
                     ? "video"
                     : "image",
                 }
               : null,
-            image: attrs.image ? attrs.image.url : null,
+            image: item.image?.url || null,
           };
         });
 
