@@ -1,4 +1,4 @@
-'use client';
+'use client'; // لازم يكون أول شيء في الملف
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
-  const BASE_URL = "http://localhost:1337";
+  const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
 
   const [teamResults, setTeamResults] = useState([]);
   const [serviceResults, setServiceResults] = useState([]);
@@ -29,16 +29,24 @@ export default function SearchPage() {
         const teamData = await teamRes.json();
         const serviceData = await serviceRes.json();
 
-        const formattedTeam = (teamData.data || []).map(member => ({
-          id: member.id,
-          name: member.name || "No Name",
-          position: member.position || "No Position",
-          image: member.image?.[0]?.formats?.small?.url
-            ? `${BASE_URL}${member.image[0].formats.small.url}`
-            : member.image?.[0]?.url
-              ? `${BASE_URL}${member.image[0].url}`
-              : "/Imgs/person.png"
-        }));
+        const formattedTeam = (teamData.data || []).map(member => {
+          let imgUrl = null;
+
+          if (member.image && member.image.length > 0) {
+            if (member.image[0].formats?.small?.url) {
+              imgUrl = member.image[0].formats.small.url;
+            } else if (member.image[0].url) {
+              imgUrl = member.image[0].url;
+            }
+          }
+
+          return {
+            id: member.id,
+            name: member.name || "No Name",
+            position: member.position || "No Position",
+            image: imgUrl,
+          };
+        });
 
         const formattedServices = (serviceData.data || []).map(service => ({
           id: service.id,
@@ -79,39 +87,51 @@ export default function SearchPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-[#643F2E]">
         Search Results for: "{query}"
       </h1>
 
       {loading ? (
         <p className="text-gray-500">Loading results...</p>
       ) : (
-        <>
-          {/* Team Results */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-[#643F2E]">Team</h2>
+        <div className="flex flex-col md:flex-row gap-6 ">
+          {/* Column 1: Titles / Navigation */}
+          <div className="md:w-1/4 flex flex-col gap-6 mt-40">
+            <h2 className="text-xl font-semibold text-[#643F2E]">Team</h2>
+            <h2 className="text-xl font-semibold text-[#643F2E]">Services</h2>
+            <Link href="/" className="text-blue-500 underline mt-4">
+              Go Back Home
+            </Link>
+          </div>
+
+          {/* Column 2: Results */}
+          <div className="md:w-3/4 flex flex-col gap-8 mt-20">
+            {/* Team Results */}
             {teamResults.length === 0 ? (
               <p className="text-gray-500">No team members found.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
                 {teamResults.map(member => (
-                  <div key={member.id} className="p-4 border rounded-lg shadow hover:shadow-lg transition">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-48 object-cover rounded"
-                    />
-                    <h3 className="mt-2 font-semibold text-lg">{member.name}</h3>
-                    <p className="text-gray-600">{member.position}</p>
+                  <div key={member.id} className="border rounded-lg shadow hover:shadow-lg transition">
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-48 object-cover rounded bg-[#643F2E]"
+                      />
+                    ) : (
+                      <div className="w-full h-48 flex items-center justify-center rounded bg-gray-200 text-gray-500">
+                        No Image
+                      </div>
+                    )}
+                    <h3 className="p-4 mt-2 font-semibold text-lg">{member.name}</h3>
+                    <p className="p-4 text-gray-600">{member.position}</p>
                   </div>
                 ))}
               </div>
             )}
-          </div>
 
-          {/* Services Results */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-[#643F2E]">Services</h2>
+            {/* Services Results */}
             {serviceResults.length === 0 ? (
               <p className="text-gray-500">No services found.</p>
             ) : (
@@ -129,12 +149,8 @@ export default function SearchPage() {
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
-
-      <Link href="/" className="text-blue-500 underline mt-4 block">
-        Go Back Home
-      </Link>
     </div>
   );
 }

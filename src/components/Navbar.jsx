@@ -2,25 +2,33 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import ServicesDropdown from "../components/ServicesDropdown.jsx";
+import Loading from "../components/Loading.jsx"; 
+import { useLanguage } from '../components/LanguageContext.jsx';
 
-export default function Navbar({ variant }) {
-  const [language, setLanguage] = useState("EN");
+export default function Navbar({ variant, pathname }) {
+  const { language, toggleLanguage } = useLanguage();
   const [servicesOpen, setServicesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const showHomeLink = pathname !== '/'; // أي صفحة غير الهوم
 
   const router = useRouter();
 
-  const toggleLanguage = () => {
-    setLanguage(prev => (prev === "EN" ? "AR" : "EN"));
+  const handleNavigation = async (path) => {
+    setLoading(true);
+    await router.push(path);
+    setLoading(false);
   };
 
   const handleSearchKey = (e) => {
     if (e.key === "Enter" && query.trim() !== "") {
-      router.push(`/search?query=${encodeURIComponent(query)}`);
+      handleNavigation(`/search?query=${encodeURIComponent(query)}`);
       setSearchOpen(false);
       setQuery("");
     }
@@ -30,11 +38,10 @@ export default function Navbar({ variant }) {
     ? "flex items-center justify-between border rounded-xl w-full md:w-[1252px] h-[71px] px-4 md:px-6 text-sm absolute top-[20px] left-0 md:left-[24px] text-white bg-transparent z-50"
     : "flex items-center justify-between w-full h-[71px] px-4 md:px-10 text-sm bg-[#643F2E] text-white shadow-md relative";
 
-  // النصوص حسب اللغة
   const texts = {
     home: language === "EN" ? "Home" : "الرئيسية",
     about: language === "EN" ? "About Us" : "من نحن",
-    services: language === "EN" ? "Services ▾" : "خدمات ▾",
+    services: language === "EN" ? "Services" : "خدمات",
     team: language === "EN" ? "Our Team" : "الفريق",
     blogs: language === "EN" ? "Blogs" : "المدونة",
     contact: language === "EN" ? "Contact Us" : "اتصل بنا",
@@ -44,10 +51,16 @@ export default function Navbar({ variant }) {
   };
 
   return (
-    <nav className={navbarClasses} dir={language === "AR" ? "rtl" : "ltr"}>
+    <nav className={navbarClasses}>
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-50">
+          <Loading />
+        </div>
+      )}
+
       {/* Logo */}
       <div className="flex items-center md:flex"> 
-        <Link href="/">
+        <Link href="/" onClick={(e) => { e.preventDefault(); handleNavigation("/"); }}>
           <img
             src="/Imgs/logoo.png"
             alt="Logo"
@@ -58,40 +71,48 @@ export default function Navbar({ variant }) {
 
       {/* Desktop Menu */}
       {!searchOpen && (
-<ul className={`hidden md:flex items-center ${language === "AR" ? "gap-6" : "space-x-6"}`}>
-          {variant !== "home" && (
+        <ul
+          className={`hidden md:flex items-center gap-6 
+          ${language === "AR" ? "text-lg flex-row-left mr-40 gap-16" : "text-sm"}`}
+        >
+          {showHomeLink && (
             <li>
-              <Link href="/" className="hover:text-gray-300 transition">
+              <Link href="/" onClick={(e) => { e.preventDefault(); handleNavigation("/"); }}>
                 {texts.home}
               </Link>
             </li>
           )}
           <li>
-            <Link href="/about" className="hover:text-gray-300 transition">
+            <Link href="/about" onClick={(e) => { e.preventDefault(); handleNavigation("/about"); }}>
               {texts.about}
             </Link>
           </li>
           <li className="relative">
             <button
               onClick={() => setServicesOpen(!servicesOpen)}
-              className="hover:text-gray-300 transition"
+              className="hover:text-gray-300 transition flex items-center gap-1"
             >
               {texts.services}
+              {servicesOpen ? (
+                <IoIosArrowUp className="inline-block text-sm" />
+              ) : (
+                <IoIosArrowDown className="inline-block text-sm" />
+              )}
             </button>
             <ServicesDropdown isOpen={servicesOpen} />
           </li>
           <li>
-            <Link href="/team" className="hover:text-gray-300 transition">
+            <Link href="/team" onClick={(e) => { e.preventDefault(); handleNavigation("/team"); }}>
               {texts.team}
             </Link>
           </li>
           <li>
-            <Link href="/blogs" className="hover:text-gray-300 transition">
+            <Link href="/blogs" onClick={(e) => { e.preventDefault(); handleNavigation("/blogs"); }}>
               {texts.blogs}
             </Link>
           </li>
           <li>
-            <Link href="/contact" className="hover:text-gray-300 transition">
+            <Link href="/contact" onClick={(e) => { e.preventDefault(); handleNavigation("/contact"); }}>
               {texts.contact}
             </Link>
           </li>
@@ -102,10 +123,11 @@ export default function Navbar({ variant }) {
       <div className="flex items-center space-x-4">
         {!searchOpen && variant === "home" && (
           <button
-            onClick={toggleLanguage}
-            className="px-3 py-1 rounded border border-white hover:bg-white hover:text-[#643F2E] transition"
+            onClick={toggleLanguage} 
+            className="px-3 py-1 hover:bg-white hover:text-[#643F2E] transition flex items-center gap-1"
           >
             {language}
+            <IoIosArrowDown className="text-sm" />
           </button>
         )}
 
@@ -119,11 +141,12 @@ export default function Navbar({ variant }) {
         )}
 
         {!searchOpen && (
-          <Link href="/appointment">
-            <button className="px-4 py-1 bg-transparent border border-white text-white rounded hover:bg-white hover:text-[#643F2E] transition">
-              {texts.bookAppointment}
-            </button>
-          </Link>
+          <button
+            onClick={() => handleNavigation("/appointment")}
+            className="px-4 py-1 bg-transparent border border-white text-white rounded hover:bg-white hover:text-[#643F2E] transition"
+          >
+            {texts.bookAppointment}
+          </button>
         )}
 
         {/* Mobile menu toggle */}
@@ -140,50 +163,58 @@ export default function Navbar({ variant }) {
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && !searchOpen && (
         <div className="absolute top-full left-0 w-full md:hidden z-40 flex justify-center">
-          <div className="w-full bg-white/0.2 backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2">
-            {variant === "service" && (
+          <div
+            className={`w-full bg-white/0.2 backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2 
+            ${language === "AR" ? "text-lg font-bold" : "text-sm"}`}
+          >
+            {showHomeLink && (
               <Link
                 href="/"
+                onClick={(e) => { e.preventDefault(); handleNavigation("/"); setMobileMenuOpen(false); }}
                 className="hover:text-gray-300 transition px-2 py-1 rounded"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 {texts.home}
               </Link>
             )}
             <Link
               href="/about"
+              onClick={(e) => { e.preventDefault(); handleNavigation("/about"); setMobileMenuOpen(false); }}
               className="hover:text-gray-300 transition px-2 py-1 rounded"
-              onClick={() => setMobileMenuOpen(false)}
             >
               {texts.about}
             </Link>
             <div className="relative">
               <button
                 onClick={() => setServicesOpen(!servicesOpen)}
-                className="hover:text-gray-300 transition px-2 py-1 rounded w-full text-left"
+                className="hover:text-gray-300 transition px-2 py-1 rounded w-full flex items-center justify-between"
               >
                 {texts.services}
+                {servicesOpen ? (
+                  <IoIosArrowUp className="inline-block text-lg" />
+                ) : (
+                  <IoIosArrowDown className="inline-block text-lg" />
+                )}
               </button>
               {servicesOpen && <ServicesDropdown isOpen={servicesOpen} isMobile />}
             </div>
             <Link
               href="/team"
+              onClick={(e) => { e.preventDefault(); handleNavigation("/team"); setMobileMenuOpen(false); }}
               className="hover:text-gray-300 transition px-2 py-1 rounded"
-              onClick={() => setMobileMenuOpen(false)}
             >
               {texts.team}
             </Link>
             <Link
               href="/blogs"
+              onClick={(e) => { e.preventDefault(); handleNavigation("/blogs"); setMobileMenuOpen(false); }}
               className="hover:text-gray-300 transition px-2 py-1 rounded"
-              onClick={() => setMobileMenuOpen(false)}
             >
               {texts.blogs}
             </Link>
             <Link
               href="/contact"
+              onClick={(e) => { e.preventDefault(); handleNavigation("/contact"); setMobileMenuOpen(false); }}
               className="hover:text-gray-300 transition px-2 py-1 rounded"
-              onClick={() => setMobileMenuOpen(false)}
             >
               {texts.contact}
             </Link>
@@ -191,7 +222,7 @@ export default function Navbar({ variant }) {
         </div>
       )}
 
-      {/* Search Open: show input + appointment + cancel */}
+      {/* Search Open */}
       {searchOpen && (
         <div className="absolute top-0 left-0 w-full h-[71px] flex items-center justify-end bg-transparent z-50 px-4 md:px-10">
           <div className="flex items-center space-x-2">
@@ -204,21 +235,21 @@ export default function Navbar({ variant }) {
               className="w-full md:w-64 p-2 rounded border border-gray-300 text-white"
               placeholder={texts.searchPlaceholder}
             />
-            <Link href="/appointment">
-              <button className="px-4 py-1 bg-transparent border border-white text-white rounded hover:bg-white hover:text-[#643F2E] transition">
-                {texts.bookAppointment}
-              </button>
-            </Link>
             <button
+              onClick={() => handleNavigation("/appointment")}
               className="px-4 py-1 bg-transparent border border-white text-white rounded hover:bg-white hover:text-[#643F2E] transition"
+            >
+              {texts.bookAppointment}
+            </button>
+            <button
               onClick={() => setSearchOpen(false)}
+              className="px-4 py-1 bg-transparent border border-white text-white rounded hover:bg-white hover:text-[#643F2E] transition"
             >
               {texts.cancel}
             </button>
           </div>
         </div>
       )}
-
     </nav>
   );
 }

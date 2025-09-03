@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Loading from "@/components/Loading"; 
 
 //func Rich Text (Strapi blocks) to JSX
 function renderRichText(blocks) {
@@ -33,11 +34,13 @@ export default function ServicePage() {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
+
   useEffect(() => {
     async function fetchService() {
       try {
         const res = await fetch(
-          `http://localhost:1337/api/services?filters[slug][$eq]=${slug}&populate=*`
+          `${BASE_URL}/api/services?filters[slug][$eq]=${slug}&populate=*`
         );
         const data = await res.json();
         setService(data.data[0] || null);
@@ -50,8 +53,11 @@ export default function ServicePage() {
     if (slug) fetchService();
   }, [slug]);
 
-  if (loading) return <div className="p-10 text-center">Loading...</div>;
-  if (!service) return <div className="p-10 text-center text-red-600">Service not found</div>;
+  if (loading) return <Loading />; // ✅ استخدام Loading Component
+  if (!service)
+    return (
+      <div className="p-10 text-center text-red-600">Service not found</div>
+    );
 
   const { title, description, sections } = service;
 
@@ -67,20 +73,16 @@ export default function ServicePage() {
 
       {/* Content */}
       <section className="w-full bg-white text-gray-800 px-10 py-16">
-        <h2 className="text-[42px] font-bold mb-6 text-[#4B2615]">
-          {title}
-        </h2>
+        <h2 className="text-[42px] font-bold mb-6 text-[#4B2615]">{title}</h2>
 
         {/* Description */}
-        <div className="max-w-4xl mb-10">
-          {renderRichText(description)}
-        </div>
+        <div className="max-w-4xl mb-10">{renderRichText(description)}</div>
 
         {/* Sections */}
         {sections?.map((section) => (
           <div key={section.id} className="mb-10">
             <h3 className="text-[20px] font-semibold mb-3 text-[#4B2615]">
-              {section.title}
+              {section.title || ""}
             </h3>
 
             <div>{renderRichText(section.text)}</div>

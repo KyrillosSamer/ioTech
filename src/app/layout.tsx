@@ -1,20 +1,46 @@
-// src/app/layout.tsx
-import './globals.css';
-import NavbarWrapper from '@/components/NavbarWrapper';
-import Footer from '@/components/Footer';
+// app/layout.tsx
+import "./globals.css";
+import NavbarWrapper from "@/components/NavbarWrapper";
+import Footer from "@/components/Footer";
+import { LanguageProvider } from "@/components/LanguageContext.jsx";
 
 export const metadata = {
-  title: "IO Tech",
-  description: "Frontend Developer Task",
+  title: "IO Tech - Legal & Corporate Services",
+  description:
+    "IO Tech provides professional legal consultations, corporate governance, arbitration, intellectual property, investment, and financial services.",
+  openGraph: {
+    title: "IO Tech - Legal & Corporate Services",
+    description: "Trusted legal advisory and corporate services for individuals, companies, and institutions.",
+    url: "https://yourdomain.com",
+    siteName: "IO Tech",
+    images: [
+      {
+        url: "/Imgs/cover.jpg",
+        width: 1200,
+        height: 630,
+        alt: "IO Tech Legal Services",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IO Tech - Legal & Corporate Services",
+    description: "Trusted legal advisory and corporate services for individuals, companies, and institutions.",
+    images: ["/Imgs/cover.jpg"],
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-white text-gray-900 relative">
-        <NavbarWrapper /> {/* NavbarWrapper ممكن يكون client */}
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <NavbarWrapper />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );
