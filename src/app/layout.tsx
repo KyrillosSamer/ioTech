@@ -2,7 +2,8 @@
 import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import Footer from "@/components/Footer";
-import { LanguageProvider } from "@/components/LanguageContext.jsx";
+import { LanguageProvider } from "@/components/LanguageContext";
+import { ReactNode } from "react";
 
 export const metadata = {
   title: "IO Tech - Legal & Corporate Services",
@@ -32,7 +33,12 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+// نوع الخصائص المطلوبة للـ RootLayout
+type RootLayoutProps = {
+  children: ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className="bg-white text-gray-900 relative">
