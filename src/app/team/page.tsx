@@ -15,6 +15,21 @@ interface TeamMember {
   image: string | null;
 }
 
+interface StrapiTeamMember {
+  id: number;
+  name?: string;
+  position?: string;
+  whatsapp?: string;
+  phone?: string;
+  email?: string;
+  image?: Array<{
+    url?: string;
+    formats?: {
+      small?: { url?: string };
+    };
+  }>;
+}
+
 export default function TeamSection() {
   const { language } = useLanguage();
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -32,7 +47,7 @@ export default function TeamSection() {
         if (!res.ok) throw new Error(`Failed to fetch team: ${res.status}`);
         const data = await res.json();
 
-        const formattedTeam: TeamMember[] = (data?.data || []).map((member: any) => {
+        const formattedTeam: TeamMember[] = (data?.data || []).map((member: StrapiTeamMember) => {
           const imgObj = member.image?.[0];
           const imageUrl = imgObj?.formats?.small?.url || imgObj?.url || null;
 
