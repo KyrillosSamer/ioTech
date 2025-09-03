@@ -1,11 +1,19 @@
 'use client';
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
-import { useLanguage } from '../components/LanguageContext.jsx'; // Language context
+import { useLanguage } from './LanguageContext';
+
+interface Client {
+  name: string;
+  position: string;
+  feedback: string;
+  img: string;
+}
 
 export default function FeedBack() {
   const { language } = useLanguage(); 
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
 
@@ -16,11 +24,11 @@ export default function FeedBack() {
         const res = await fetch(`${BASE_URL}/api/clients?populate=image&locale=${locale}`);
         const data = await res.json();
 
-        const formattedClients = data?.data?.map(item => ({
+        const formattedClients: Client[] = data?.data?.map((item: any) => ({
           name: item?.name || "No Name",
           position: item?.position || "No Position",
           feedback: item?.feedback
-            ?.map(f => f.children.map(c => c.text).join(''))
+            ?.map((f: any) => f.children.map((c: any) => c.text).join(''))
             .join('\n') || "No Feedback",
           img: item?.image?.[0]?.formats?.small?.url
             ? item.image[0].formats.small.url
@@ -67,10 +75,12 @@ export default function FeedBack() {
 
       {/* Testimonial Content */}
       <div className={`flex flex-col md:flex-row items-center gap-6 md:gap-10`}>
-        {/* Image on right side only for Arabic */}
-        <img
+        {/* Image */}
+        <Image
           src={client.img}
           alt={client.name}
+          width={374}
+          height={374}
           className={`w-full max-w-[300px] sm:max-w-[374px] h-[300px] sm:h-[374px] object-cover rounded-lg bg-[#643F2E] 
             ${isRTL ? "order-2 md:order-1" : "order-1"}`}
         />

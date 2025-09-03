@@ -1,42 +1,48 @@
 'use client';
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { FaWhatsapp, FaPhone, FaEnvelope, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Loading from "@/components/Loading";
-import { useLanguage } from "@/components/LanguageContext"; 
+import { useLanguage } from "@/components/LanguageContext";
+
+interface TeamMember {
+  id: number;
+  name: string;
+  position: string;
+  whatsapp: string;
+  phone: string;
+  email: string;
+  image: string | null;
+}
 
 export default function TeamSection() {
   const { language } = useLanguage();
-  const [team, setTeam] = useState([]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [visibleCount, setVisibleCount] = useState(3);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
-
-  // هنا نعمل تحويل من EN/AR إلى en/ar
   const locale = language === "AR" ? "ar" : "en";
 
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const res = await fetch(
-          `${BASE_URL}/api/teams?locale=${locale}&populate=image`
-        );
+        const res = await fetch(`${BASE_URL}/api/teams?locale=${locale}&populate=image`);
         if (!res.ok) throw new Error(`Failed to fetch team: ${res.status}`);
         const data = await res.json();
 
-        const formattedTeam = data?.data?.map(member => ({
+        const formattedTeam: TeamMember[] = data?.data?.map((member: any) => ({
           id: member.id,
           name: member.name || "No Name",
           position: member.position || "No Position",
           whatsapp: member.whatsapp || "#",
           phone: member.phone || "#",
           email: member.email || "#",
-          image: member.image?.[0]?.formats?.small?.url
-            ? member.image[0].formats.small.url
-            : member.image?.[0]?.url
-            ? member.image[0].url
-            : null
+          image:
+            member.image?.[0]?.formats?.small?.url ||
+            member.image?.[0]?.url ||
+            null
         }));
 
         setTeam(formattedTeam);
@@ -84,9 +90,11 @@ export default function TeamSection() {
         {team.slice(index, index + visibleCount).map(member => (
           <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-25">
             {member.image && (
-              <img
+              <Image
                 src={member.image}
                 alt={member.name}
+                width={269}
+                height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
               />
             )}
