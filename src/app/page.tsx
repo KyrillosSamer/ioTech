@@ -2,13 +2,27 @@
 import HeroSection from "@/components/HeroSection";
 import TeamSectionServer from "@/components/TeamSection";
 import ClientSectionServer from "@/components/Client";
-import { generateHeroJSONLD, generateTeamJSONLD, generateClientsJSONLD } from "@/lib/structuredData";
+import { 
+  generateHeroJSONLD, 
+  generateTeamJSONLD, 
+  generateClientsJSONLD, 
+  HeroData, 
+  TeamMember, 
+  Client 
+} from "@/lib/structuredData";
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata() {
-  const hero = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero').then(res => res.json());
-  const team = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/teams').then(res => res.json());
-  const clients = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/clients').then(res => res.json());
+  const heroRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero');
+  const heroData: { data?: HeroData } = await heroRes.json();
+
+  const teamRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/teams');
+  const teamData: { data?: TeamMember[] } = await teamRes.json();
+
+  const clientsRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/clients');
+  const clientsData: { data?: Client[] } = await clientsRes.json();
+
+  const hero = heroData.data;
 
   return {
     title: hero?.title || "IO Tech - Legal & Corporate Services",
@@ -40,40 +54,32 @@ export async function generateMetadata() {
 
 // Home Page Component
 export default async function Home() {
-  // Fetch data from APIs
-  const hero = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero').then(res => res.json());
-  const team = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/teams').then(res => res.json());
-  const clients = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/clients').then(res => res.json());
+  const heroRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero');
+  const heroData: { data?: HeroData } = await heroRes.json();
+
+  const teamRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/teams');
+  const teamData: { data?: TeamMember[] } = await teamRes.json();
+
+  const clientsRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/clients');
+  const clientsData: { data?: Client[] } = await clientsRes.json();
 
   return (
     <>
-      {/* Hero Section */}
-      <HeroSection data={hero?.data} />
+      <HeroSection data={heroData.data} />
+      <TeamSectionServer team={teamData.data} />
+      <ClientSectionServer clients={clientsData.data} />
 
-      {/* Team Section */}
-      <TeamSectionServer team={team?.data} />
-
-      {/* Clients Section */}
-      <ClientSectionServer clients={clients?.data} />
-
-      {/* Structured Data JSON-LD for SEO */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateHeroJSONLD(hero?.data)),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateHeroJSONLD(heroData.data)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateTeamJSONLD(team?.data)),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateTeamJSONLD(teamData.data)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateClientsJSONLD(clients?.data)),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateClientsJSONLD(clientsData.data)) }}
       />
     </>
   );

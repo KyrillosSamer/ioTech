@@ -1,6 +1,49 @@
 // src/lib/structuredData.ts
 
-export function generateHeroJSONLD(heroData: any) {
+type HeroData = {
+  title?: string;
+  description?: string;
+  image?: { url?: string };
+};
+
+type TeamMember = {
+  name?: string;
+  position?: string;
+  email?: string;
+  phone?: string;
+};
+
+type Client = {
+  name?: string;
+};
+
+type BlogData = {
+  title?: string;
+  description?: string;
+  url?: string;
+  datePublished?: string;
+};
+
+type ContactData = {
+  name?: string;
+  url?: string;
+  phone?: string;
+  email?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    country?: string;
+  };
+};
+
+type ServiceData = {
+  title?: string;
+  description?: { children: { text: string }[] }[];
+  slug?: string;
+};
+
+// ✅ Hero
+export function generateHeroJSONLD(heroData?: HeroData) {
   if (!heroData) return {};
   return {
     "@context": "https://schema.org",
@@ -12,7 +55,8 @@ export function generateHeroJSONLD(heroData: any) {
   };
 }
 
-export function generateTeamJSONLD(teamData: any[]) {
+// ✅ Team
+export function generateTeamJSONLD(teamData?: TeamMember[]) {
   if (!teamData || !Array.isArray(teamData)) return {};
   return {
     "@context": "https://schema.org",
@@ -27,7 +71,8 @@ export function generateTeamJSONLD(teamData: any[]) {
   };
 }
 
-export function generateClientsJSONLD(clientsData: any[]) {
+// ✅ Clients
+export function generateClientsJSONLD(clientsData?: Client[]) {
   if (!clientsData || !Array.isArray(clientsData)) return {};
   return {
     "@context": "https://schema.org",
@@ -39,7 +84,7 @@ export function generateClientsJSONLD(clientsData: any[]) {
   };
 }
 
-// ✅ About page JSON-LD
+// ✅ About page
 export function generateAboutJSONLD() {
   return {
     "@context": "https://schema.org",
@@ -59,8 +104,8 @@ export function generateAboutJSONLD() {
   };
 }
 
-// ✅ Blog page JSON-LD
-export function generateBlogJSONLD(blogData: any) {
+// ✅ Blog
+export function generateBlogJSONLD(blogData?: BlogData) {
   if (!blogData) return {};
   return {
     "@context": "https://schema.org",
@@ -76,8 +121,8 @@ export function generateBlogJSONLD(blogData: any) {
   };
 }
 
-// ✅ Contact page JSON-LD
-export function generateContactJSONLD(contactData: any) {
+// ✅ Contact
+export function generateContactJSONLD(contactData?: ContactData) {
   if (!contactData) return {};
   return {
     "@context": "https://schema.org",
@@ -95,8 +140,8 @@ export function generateContactJSONLD(contactData: any) {
   };
 }
 
-// ✅ Service page JSON-LD
-export function generateServiceJSONLD(serviceData: any) {
+// ✅ Service
+export function generateServiceJSONLD(serviceData?: ServiceData) {
   if (!serviceData) return {};
   return {
     "@context": "https://schema.org",
