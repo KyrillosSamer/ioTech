@@ -11,7 +11,6 @@ interface Client {
   img: string;
 }
 
-// تعريف نوع البيانات القادمة من Strapi لتجنب استخدام any
 interface StrapiClient {
   id: number;
   name?: string;

@@ -1,4 +1,4 @@
-'use client'; // لازم يكون أول شيء في الملف
+'use client'; 
 
 export const dynamic = "force-dynamic";
 

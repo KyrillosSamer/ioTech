@@ -1,4 +1,3 @@
-// app/blogs/page.tsx
 import React from "react";
 import { generateBlogJSONLD } from "@/lib/structuredData";
 

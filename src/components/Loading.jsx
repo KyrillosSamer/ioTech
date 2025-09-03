@@ -1,4 +1,3 @@
-// src/components/Loading.jsx
 "use client";
 import React from "react";
 

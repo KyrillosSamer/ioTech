@@ -40,7 +40,6 @@ export default function TeamSection() {
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
   const locale = language === "AR" ? "ar" : "en";
 
-  // Fetch team data
   useEffect(() => {
     const fetchTeam = async () => {
       try {
@@ -74,22 +73,21 @@ export default function TeamSection() {
     fetchTeam();
   }, [locale]);
 
-  // Handle visible count on resize
-  useEffect(() => {
-    const updateVisibleCount = () => {
-      if (typeof window !== "undefined") {
-        if (window.innerWidth < 640) setVisibleCount(1);
-        else if (window.innerWidth < 1024) setVisibleCount(2);
-        else setVisibleCount(3);
-      }
-    };
+  const getVisibleCount = () => {
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 640) return 1;
+      if (window.innerWidth < 1024) return 2;
+    }
+    return 3;
+  };
 
-    updateVisibleCount();
-    window.addEventListener("resize", updateVisibleCount);
-    return () => window.removeEventListener("resize", updateVisibleCount);
+  useEffect(() => {
+    setVisibleCount(getVisibleCount());
+    const handleResize = () => setVisibleCount(getVisibleCount());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Slide controls
   const prevSlide = () => setIndex(index === 0 ? Math.max(team.length - visibleCount, 0) : index - 1);
   const nextSlide = () => setIndex(index + visibleCount >= team.length ? 0 : index + 1);
 
@@ -102,14 +100,14 @@ export default function TeamSection() {
       </h1>
       <p className="w-full sm:w-[500px] mx-auto mt-4 text-gray-600 text-sm sm:text-base">
         {language === "AR"
-          ? "لوريم إيبسوم دولار سيت أميت، كونسيكتيتور أديبيسيسينغ إليت. تينيتور كواسي إت فولوبتاتوم كوييدم نون إكسبيدييتا فيتاي."
+          ? "نحن فريق متخصص نسعى لتقديم أفضل الخدمات لعملائنا، مع التركيز على الجودة والاحترافية في كل مشروع."
           : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur quasi et voluptatum quidem non expedita vitae."}
       </p>
 
       <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-12 overflow-hidden">
         {team.slice(index, index + visibleCount).map(member => (
-          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-10">
-            {member.image ? (
+          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-25">
+            {member.image && (
               <Image
                 src={member.image}
                 alt={member.name}
@@ -117,10 +115,6 @@ export default function TeamSection() {
                 height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
               />
-            ) : (
-              <div className="w-full h-[250px] sm:h-[180px] lg:h-[184px] flex items-center justify-center rounded-lg bg-gray-200 text-gray-500">
-                No Image
-              </div>
             )}
             <h2 className="mt-3 text-lg font-semibold text-[#643F2E]">{member.name}</h2>
             <p className="text-gray-500 text-sm">{member.position}</p>

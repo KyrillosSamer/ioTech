@@ -53,7 +53,7 @@ export default function ServicePage() {
     if (slug) fetchService();
   }, [slug]);
 
-  if (loading) return <Loading />; // ✅ استخدام Loading Component
+  if (loading) return <Loading />; 
   if (!service)
     return (
       <div className="p-10 text-center text-red-600">Service not found</div>
