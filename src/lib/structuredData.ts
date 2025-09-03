@@ -1,30 +1,31 @@
 // src/lib/structuredData.ts
 
-type HeroData = {
+// ✅ Types
+export type HeroData = {
   title?: string;
   description?: string;
   image?: { url?: string };
 };
 
-type TeamMember = {
+export type TeamMember = {
   name?: string;
   position?: string;
   email?: string;
   phone?: string;
 };
 
-type Client = {
+export type Client = {
   name?: string;
 };
 
-type BlogData = {
+export type BlogData = {
   title?: string;
   description?: string;
   url?: string;
   datePublished?: string;
 };
 
-type ContactData = {
+export type ContactData = {
   name?: string;
   url?: string;
   phone?: string;
@@ -36,7 +37,7 @@ type ContactData = {
   };
 };
 
-type ServiceData = {
+export type ServiceData = {
   title?: string;
   description?: { children: { text: string }[] }[];
   slug?: string;
