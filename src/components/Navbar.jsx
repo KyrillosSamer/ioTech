@@ -17,8 +17,8 @@ export default function Navbar({ variant }) {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname(); // ✅ نجيب المسار الحالي
-  const showHomeLink = pathname !== "/"; // ✅ مش هيظهر لو احنا في الهوم
+  const pathname = usePathname(); 
+  const showHomeLink = pathname !== "/"; 
 
   const handleNavigation = async (path) => {
     setLoading(true);
@@ -167,7 +167,7 @@ const handleSearchKey = async (e) => {
       {mobileMenuOpen && !searchOpen && (
         <div className="absolute top-full left-0 w-full md:hidden z-40 flex justify-center">
           <div
-            className={`w-full bg-white/20 backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2 
+            className={`w-full bg-[#643f2e] backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2 
             ${language === "AR" ? "text-lg font-bold" : "text-sm"}`}
           >
             {showHomeLink && (

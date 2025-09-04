@@ -66,14 +66,11 @@ export default async function Home() {
 
   return (
     <>
-      {/* مرر البيانات بس للـ HeroSection لأنه محتاجها */}
       <HeroSection  />
-      
-      {/* الكمبوننتات دي هتجيب البيانات بنفسها - مش تمرر props */}
       <TeamSectionServer />
       <ClientSectionServer />
 
-      {/* استعمل البيانات للـ SEO structured data */}
+      {/*use data for SEO structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(generateHeroJSONLD(heroData.data)) }}
