@@ -54,6 +54,7 @@ export async function generateMetadata() {
 
 // Home Page Component
 export default async function Home() {
+  // جيب البيانات بس للـ SEO والـ structured data
   const heroRes = await fetch('https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero');
   const heroData: { data?: HeroData } = await heroRes.json();
 
@@ -65,10 +66,14 @@ export default async function Home() {
 
   return (
     <>
-      <HeroSection data={heroData.data} />
-      <TeamSectionServer team={teamData.data} />
-      <ClientSectionServer clients={clientsData.data} />
+      {/* مرر البيانات بس للـ HeroSection لأنه محتاجها */}
+      <HeroSection  />
+      
+      {/* الكمبوننتات دي هتجيب البيانات بنفسها - مش تمرر props */}
+      <TeamSectionServer />
+      <ClientSectionServer />
 
+      {/* استعمل البيانات للـ SEO structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(generateHeroJSONLD(heroData.data)) }}

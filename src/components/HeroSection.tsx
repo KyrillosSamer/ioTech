@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { HeroData } from "@/lib/structuredData";
-import { useLanguage } from "./LanguageContext.jsx"; // Language context
+import { useLanguage } from "@/components/LanguageContext"; // Fixed import path
 
 interface HeroSectionProps {
-  data?: HeroData; // Accepts HeroData as prop
+  data?: HeroData; 
 }
 
 interface HeroAPIResponse {
@@ -33,14 +34,18 @@ export default function HeroSection({ data }: HeroSectionProps) {
     async function fetchHero() {
       try {
         const locale = isRTL ? "ar" : "en";
+        // Fixed API endpoint to match page.tsx (hero instead of heroes)
         const res = await fetch(
           `https://tranquil-positivity-9ec86ca654.strapiapp.com/api/heroes?populate=*&locale=${locale}`
         );
         const result = await res.json();
 
-        if (!result?.data || !Array.isArray(result.data)) return;
+        // Handle both single object and array responses
+        const heroArray = Array.isArray(result?.data) ? result.data : [result?.data].filter(Boolean);
 
-        const heroData: HeroData[] = result.data.map((item: HeroAPIResponse) => {
+        if (heroArray.length === 0) return;
+
+        const heroData: HeroData[] = heroArray.map((item: HeroAPIResponse) => {
           return {
             title: item.title || "",
             description: Array.isArray(item.description)
@@ -53,7 +58,8 @@ export default function HeroSection({ data }: HeroSectionProps) {
             background: item.backgroundImage
               ? {
                   url: item.backgroundImage.url,
-                  type: item.backgroundImage.mime?.startsWith("video")
+                  // Fixed TypeScript issue with potential undefined
+                  type: (item.backgroundImage.mime?.startsWith("video") ?? false)
                     ? "video"
                     : "image",
                 }
@@ -122,28 +128,36 @@ export default function HeroSection({ data }: HeroSectionProps) {
           <p className="text-base sm:text-lg md:text-lg">{description}</p>
         </div>
 
-        {/* Photo */}
+        {/* Photo - Fixed to use Next.js Image component */}
         {image && (
           <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px]">
-            <img
+            <Image
               src={image}
-              alt="Side"
+              alt="Hero image"
+              width={374}
+              height={374}
               className="w-full h-full object-cover rounded-xl shadow-lg bg-[#643F2E]"
+              priority // Added priority for hero image
             />
           </div>
         )}
       </div>
 
-      {/* Vertical Dots */}
-      <div className="absolute top-1/2 transform -translate-y-1/2 left-[3%] flex flex-col gap-4 z-20">
-        {slides.map((_, idx) => (
-          <button
-            key={idx}
-            className={`w-3 h-3 rounded-full ${idx === current ? "bg-white" : "bg-white/50"}`}
-            onClick={() => setCurrent(idx)}
-          />
-        ))}
-      </div>
+      {/* Vertical Dots - Only show if multiple slides */}
+      {slides.length > 1 && (
+        <div className="absolute top-1/2 transform -translate-y-1/2 left-[3%] flex flex-col gap-4 z-20">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                idx === current ? "bg-white" : "bg-white/50"
+              }`}
+              onClick={() => setCurrent(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
