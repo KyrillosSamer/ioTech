@@ -20,12 +20,12 @@ export default function ServicesDropdown({ isOpen, isMobile }) {
     fetchServices();
   }, []);
 
-  const containerClasses = isMobile
-    ? `flex flex-col p-1 bg-[#643F2E] rounded-lg shadow-md transition-all duration-300 ease-in-out
-       ${isOpen ? "max-h-64 opacity-100 overflow-y-auto" : "max-h-0 opacity-0 overflow-hidden"}`
-    : `absolute top-[37px] left-[-600%] w-[1220px] h-[250px] pb-8 bg-[#643F2E] text-white shadow-lg rounded-lg p-4 z-50
-       transform transition-all duration-300 ease-in-out
-       ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`;
+const containerClasses = isMobile
+  ? `flex flex-col p-2 bg-[#643F2E] rounded-lg shadow-lg shadow-black/40 transition-all duration-300 ease-in-out
+     ${isOpen ? "max-h-fit opacity-100 overflow-y-auto" : "max-h-0 opacity-0 overflow-hidden"}`
+  : `absolute top-[37px] left-[-600%] w-[1220px] h-auto pb-8 bg-[#643F2E] text-white shadow-lg rounded-lg p-4 z-50
+     transform transition-all duration-300 ease-in-out
+     ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}`;
 
   const linkClasses =
     "text-white hover:text-[#FFD700] text-sm font-medium transition py-0.5 px-1";
