@@ -5,7 +5,7 @@ import { HeroData } from "@/lib/structuredData";
 import { useLanguage } from "@/components/LanguageContext"; // Fixed import path
 
 interface HeroSectionProps {
-  data?: HeroData; 
+  data?: HeroData; // Accepts HeroData as prop
 }
 
 interface HeroAPIResponse {
