@@ -5,6 +5,45 @@ export const dynamic = "force-dynamic";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Image from "next/image";
+
+// Types for API responses
+type StrapiImage = {
+  url: string;
+  formats?: {
+    small?: { url: string };
+  };
+};
+
+type TeamApiResponse = {
+  id: number;
+  name?: string;
+  position?: string;
+  image?: StrapiImage[];
+};
+
+type ServiceApiResponse = {
+  id: number;
+  attributes?: {
+    title?: string;
+    slug?: string;
+    description?: { children?: { text: string }[] }[];
+  };
+};
+
+type TeamMember = {
+  id: number;
+  name: string;
+  position: string;
+  image: string | null;
+};
+
+type Service = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+};
 
 export default function SearchClient() {
   const searchParams = useSearchParams();
@@ -12,8 +51,8 @@ export default function SearchClient() {
 
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
 
-  const [teamResults, setTeamResults] = useState<any[]>([]);
-  const [serviceResults, setServiceResults] = useState<any[]>([]);
+  const [teamResults, setTeamResults] = useState<TeamMember[]>([]);
+  const [serviceResults, setServiceResults] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,14 +62,14 @@ export default function SearchClient() {
       try {
         const [teamRes, serviceRes] = await Promise.all([
           fetch(`${BASE_URL}/api/teams?populate=image`),
-          fetch(`${BASE_URL}/api/services?populate=*`)
+          fetch(`${BASE_URL}/api/services?populate=*`),
         ]);
 
-        const teamData = await teamRes.json();
-        const serviceData = await serviceRes.json();
+        const teamData: { data: TeamApiResponse[] } = await teamRes.json();
+        const serviceData: { data: ServiceApiResponse[] } = await serviceRes.json();
 
-        const formattedTeam = (teamData.data || []).map((member: any) => {
-          let imgUrl = null;
+        const formattedTeam: TeamMember[] = (teamData.data || []).map((member) => {
+          let imgUrl: string | null = null;
 
           if (member.image && member.image.length > 0) {
             if (member.image[0].formats?.small?.url) {
@@ -48,25 +87,30 @@ export default function SearchClient() {
           };
         });
 
-        const formattedServices = (serviceData.data || []).map((service: any) => ({
+        const formattedServices: Service[] = (serviceData.data || []).map((service) => ({
           id: service.id,
           title: service.attributes?.title || "No Title",
           slug: service.attributes?.slug || "#",
-          description: service.attributes?.description
-            ?.map((p: any) => p.children?.map((c: any) => c.text).join(" ") || "")
-            .join(" ")
-            .trim() || "No Description"
+          description:
+            service.attributes?.description
+              ?.map((p) => p.children?.map((c) => c.text).join(" ") || "")
+              .join(" ")
+              .trim() || "No Description",
         }));
 
         const lowerQuery = query.toLowerCase();
-        setTeamResults(formattedTeam.filter((member: any) =>
-          member.name.toLowerCase().includes(lowerQuery) ||
-          member.position.toLowerCase().includes(lowerQuery)
-        ));
-        setServiceResults(formattedServices.filter((service: any) =>
-          service.title.toLowerCase().includes(lowerQuery)
-        ));
-
+        setTeamResults(
+          formattedTeam.filter(
+            (member) =>
+              member.name.toLowerCase().includes(lowerQuery) ||
+              member.position.toLowerCase().includes(lowerQuery)
+          )
+        );
+        setServiceResults(
+          formattedServices.filter((service) =>
+            service.title.toLowerCase().includes(lowerQuery)
+          )
+        );
       } catch (error) {
         console.error("Error fetching search results:", error);
         setTeamResults([]);
@@ -88,13 +132,13 @@ export default function SearchClient() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-[#643F2E]">
-        Search Results for: "{query}"
+        Search Results for: &quot;{query}&quot;
       </h1>
 
       {loading ? (
         <p className="text-gray-500">Loading results...</p>
       ) : (
-        <div className="flex flex-col md:flex-row gap-6 ">
+        <div className="flex flex-col md:flex-row gap-6">
           {/* Column 1: Titles / Navigation */}
           <div className="md:w-1/4 flex flex-col gap-6 mt-40">
             <h2 className="text-xl font-semibold text-[#643F2E]">Team</h2>
@@ -110,13 +154,18 @@ export default function SearchClient() {
             {teamResults.length === 0 ? (
               <p className="text-gray-500">No team members found.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
-                {teamResults.map((member: any) => (
-                  <div key={member.id} className="border rounded-lg shadow hover:shadow-lg transition">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {teamResults.map((member) => (
+                  <div
+                    key={member.id}
+                    className="border rounded-lg shadow hover:shadow-lg transition"
+                  >
                     {member.image ? (
-                      <img
+                      <Image
                         src={member.image}
                         alt={member.name}
+                        width={400}
+                        height={300}
                         className="w-full h-48 object-cover rounded bg-[#643F2E]"
                       />
                     ) : (
@@ -136,14 +185,16 @@ export default function SearchClient() {
               <p className="text-gray-500">No services found.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {serviceResults.map((service: any) => (
+                {serviceResults.map((service) => (
                   <Link
                     key={service.id}
                     href={`/services/${service.slug}`}
                     className="block p-4 border rounded-lg shadow hover:shadow-lg transition"
                   >
                     <h3 className="font-semibold text-lg text-[#643F2E]">{service.title}</h3>
-                    <p className="text-gray-600 mt-2 line-clamp-3">{service.description}</p>
+                    <p className="text-gray-600 mt-2 line-clamp-3">
+                      {service.description}
+                    </p>
                   </Link>
                 ))}
               </div>
