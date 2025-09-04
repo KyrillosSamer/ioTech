@@ -26,13 +26,16 @@ export default function Navbar({ variant }) {
     setLoading(false);
   };
 
-  const handleSearchKey = (e) => {
-    if (e.key === "Enter" && query.trim() !== "") {
-      handleNavigation(`/search?query=${encodeURIComponent(query)}`);
-      setSearchOpen(false);
-      setQuery("");
-    }
-  };
+const handleSearchKey = async (e) => {
+  if (e.key === "Enter" && query.trim() !== "") {
+    setLoading(true); 
+    await router.push(`/search?query=${encodeURIComponent(query)}`);
+    setLoading(false); 
+    setSearchOpen(false);
+    setQuery("");
+  }
+};
+
 
   const navbarClasses = variant === "service"
     ? "flex items-center justify-between border rounded-xl w-full md:w-[1252px] h-[71px] px-4 md:px-6 text-sm absolute top-[20px] left-0 md:left-[24px] text-white bg-transparent z-50"

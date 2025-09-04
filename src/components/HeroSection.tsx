@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { HeroData } from "@/lib/structuredData";
-import { useLanguage } from "@/components/LanguageContext"; // Fixed import path
+import { useLanguage } from "@/components/LanguageContext"; 
 
 interface HeroSectionProps {
   data?: HeroData; // Accepts HeroData as prop
