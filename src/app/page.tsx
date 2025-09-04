@@ -33,12 +33,12 @@ export async function generateMetadata() {
       url: "https://yourdomain.com",
       siteName: "IO Tech",
       images: [
-        {
-          url: hero?.image?.url || "/Imgs/cover.jpg",
-          width: 1200,
-          height: 630,
-          alt: hero?.title || "IO Tech Legal Services",
-        },
+  {
+    url: hero?.image || "/Imgs/cover.jpg",
+    width: 1200,
+    height: 630,
+    alt: hero?.title || "IO Tech Legal Services",
+  },
       ],
       locale: "en_US",
       type: "website",
@@ -47,7 +47,7 @@ export async function generateMetadata() {
       card: "summary_large_image",
       title: hero?.title || "IO Tech - Legal & Corporate Services",
       description: hero?.description?.slice(0, 160) || "Trusted legal & corporate services.",
-      images: [hero?.image?.url || "/Imgs/cover.jpg"],
+      images: [hero?.image || "/Imgs/cover.jpg"],
     },
   };
 }
