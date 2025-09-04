@@ -92,7 +92,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
   return (
     <section
-  className={`relative w-full min-h-[90vh] md:h-[650px] flex items-center justify-center overflow-hidden`}
+  className={`relative w-full min-h-[85vh] md:h-[650px] flex items-center justify-center overflow-hidden`}
   dir={isRTL ? "rtl" : "ltr"}
 >
   {/* Background */}
