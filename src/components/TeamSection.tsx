@@ -106,7 +106,7 @@ export default function TeamSection() {
 
       <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-12 overflow-hidden">
         {team.slice(index, index + visibleCount).map(member => (
-          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-25">
+          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-3">
             {member.image && (
               <Image
                 src={member.image}
