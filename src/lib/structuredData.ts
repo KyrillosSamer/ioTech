@@ -1,16 +1,13 @@
-
 //  Types
 export type HeroData = {
   title?: string;
   description?: string;
-  image?: { url?: string };
   background?: {
-    url?: string;
-    type?: "image" | "video";
-  };
+    url: string;
+    type: "image" | "video";
+  } | null;
+  image?: string | null; 
 };
-
-
 
 export type TeamMember = {
   name?: string;
@@ -44,7 +41,7 @@ export type ContactData = {
 
 export type ServiceData = {
   title?: string;
-  description?: { children: { text: string }[] }[];
+  description?: { children: { text: string }[] }[]; 
   slug?: string;
 };
 
@@ -64,9 +61,12 @@ export function generateHeroJSONLD(heroData?: HeroData) {
     "@type": "Organization",
     "@id": `${BASE_URL}#organization`,
     name: heroData.title || "IO Tech",
-    description: heroData.description?.slice(0, 160) || "Trusted legal & corporate services.",
+    description:
+      heroData.description?.slice(0, 160) ||
+      "Trusted legal & corporate services.",
     url: BASE_URL,
-    logo: heroData.image?.url || LOGO_URL,
+    // ✅ FIX: image بقت string مش object
+    logo: heroData.image || LOGO_URL,
     sameAs: SOCIALS
   };
 }
@@ -115,7 +115,8 @@ export function generateAboutJSONLD() {
     name: "IO Tech",
     url: BASE_URL,
     logo: LOGO_URL,
-    description: "IO Tech is a leading law firm providing legal consultation, corporate services, and litigation across all sectors.",
+    description:
+      "IO Tech is a leading law firm providing legal consultation, corporate services, and litigation across all sectors.",
     founder: [
       { "@type": "Person", name: "John Due" },
       { "@type": "Person", name: "Mina Samer" }
@@ -132,7 +133,8 @@ export function generateBlogJSONLD(blogData?: BlogData) {
     "@type": "BlogPosting",
     "@id": blogData.url || `${BASE_URL}/blog`,
     headline: blogData.title || "IO Tech Blog",
-    description: blogData.description || "Latest news and updates from IO Tech",
+    description:
+      blogData.description || "Latest news and updates from IO Tech",
     url: blogData.url || `${BASE_URL}/blog`,
     datePublished: blogData.datePublished || new Date().toISOString(),
     author: {
@@ -175,12 +177,20 @@ export function generateContactJSONLD(contactData?: ContactData) {
 // . Service
 export function generateServiceJSONLD(serviceData?: ServiceData) {
   if (!serviceData) return {};
+
+  // ✅ FIX: امن ضد undefined، ومافيش .join على undefined
+  const desc =
+    serviceData.description
+      ?.map(d => (d?.children ?? []).map(c => c.text).join(" "))
+      ?.join(" ")
+      ?.trim();
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${BASE_URL}/services/${serviceData.slug || ""}#service`,
     name: serviceData.title || "IO Tech Service",
-    description: serviceData.description?.map(d => d.children.map(c => c.text).join(" ")).join(" ") || "Professional legal and corporate services",
+    description: desc || "Professional legal and corporate services",
     provider: {
       "@type": "Organization",
       "@id": `${BASE_URL}#organization`,

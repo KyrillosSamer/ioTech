@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import ServicesDropdown from "../components/ServicesDropdown.jsx";
 import Loading from "../components/Loading.jsx"; 
 import { useLanguage } from '../components/LanguageContext.jsx';
 
-export default function Navbar({ variant, pathname }) {
+export default function Navbar({ variant }) {
   const { language, toggleLanguage } = useLanguage();
   const [servicesOpen, setServicesOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -16,9 +16,9 @@ export default function Navbar({ variant, pathname }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const showHomeLink = pathname !== '/'; // أي صفحة غير الهوم
-
   const router = useRouter();
+  const pathname = usePathname(); // ✅ نجيب المسار الحالي
+  const showHomeLink = pathname !== "/"; // ✅ مش هيظهر لو احنا في الهوم
 
   const handleNavigation = async (path) => {
     setLoading(true);
@@ -164,7 +164,7 @@ export default function Navbar({ variant, pathname }) {
       {mobileMenuOpen && !searchOpen && (
         <div className="absolute top-full left-0 w-full md:hidden z-40 flex justify-center">
           <div
-            className={`w-full bg-white/0.2 backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2 
+            className={`w-full bg-white/20 backdrop-blur-sm border border-gray-300 shadow-md flex flex-col p-4 space-y-2 
             ${language === "AR" ? "text-lg font-bold" : "text-sm"}`}
           >
             {showHomeLink && (

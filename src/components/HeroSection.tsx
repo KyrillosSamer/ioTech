@@ -129,18 +129,18 @@ export default function HeroSection({ data }: HeroSectionProps) {
         </div>
 
         {/* Photo - Fixed to use Next.js Image component */}
-        {image && (
-          <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px]">
-            <Image
-              src={image}
-              alt="Hero image"
-              width={374}
-              height={374}
-              className="w-full h-full object-cover rounded-xl shadow-lg bg-[#643F2E]"
-              priority // Added priority for hero image
-            />
-          </div>
-        )}
+        {image && typeof image === "string" && (
+        <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px]">
+          <Image
+            src={image}
+            alt="Hero image"
+            width={374}
+            height={374}
+            className="w-full h-full object-cover rounded-xl shadow-lg bg-[#643F2E]"
+            priority
+          />
+        </div>
+      )}
       </div>
 
       {/* Vertical Dots - Only show if multiple slides */}
