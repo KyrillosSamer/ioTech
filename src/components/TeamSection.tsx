@@ -94,7 +94,7 @@ export default function TeamSection() {
   if (loading) return <Loading />;
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto text-center mt-32 relative px-4 sm:px-6 lg:px-0">
+    <div className="w-full max-w-[1400px] mx-auto text-center mt-14  relative px-4 sm:px-6 lg:px-0">
       <h1 className="text-3xl sm:text-4xl text-[#643F2E] font-bold">
         {language === "AR" ? "فريقنا" : "Our Team"}
       </h1>
@@ -106,7 +106,7 @@ export default function TeamSection() {
 
       <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-12 overflow-hidden">
         {team.slice(index, index + visibleCount).map(member => (
-          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-3">
+          <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-10">
             {member.image && (
               <Image
                 src={member.image}
