@@ -20,12 +20,13 @@ interface StrapiClient {
 }
 
 export default function FeedBack() {
-  const { language } = useLanguage(); 
+  const { language } = useLanguage();
   const [clients, setClients] = useState<Client[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
   const isRTL = language === "AR";
 
+  // Fetch Clients
   useEffect(() => {
     async function fetchClients() {
       try {
@@ -81,19 +82,21 @@ export default function FeedBack() {
 
       {/* Testimonial Content */}
       <div className={`flex flex-col md:flex-row items-center gap-6 md:gap-10`}>
+        {/* Image */}
         <div className={`relative w-full max-w-[300px] sm:max-w-[374px] h-[300px] sm:h-[374px] ${isRTL ? "order-2 md:order-1" : "order-1"}`}>
           <Image
             src={client.img}
             alt={client.name}
             fill
             className="object-cover rounded-lg bg-[#643F2E]"
-            priority
-            quality={70}
+            priority={currentIndex === 0} // أول عميل يعطي أولوية للـ LCP
+            quality={70} // تقليل حجم الصورة
             placeholder="blur"
             blurDataURL="/Imgs/person.png"
           />
         </div>
 
+        {/* Feedback Text */}
         <div className={`w-full md:w-[728px] ${isRTL ? "order-1 md:order-2" : "order-2"}`}>
           <p className="opacity-60 mb-4 sm:mb-6 text-base sm:text-[24px]">{`"${client.feedback}"`}</p>
           <h5 className="text-xl sm:text-2xl font-semibold">{client.name}</h5>
@@ -101,10 +104,8 @@ export default function FeedBack() {
         </div>
       </div>
 
-      {/* Arrows */}
-      <div
-        className={`flex gap-4 sm:gap-6 mt-6 ${isRTL ? "justify-start flex-row-reverse" : "justify-end"}`}
-      >
+      {/* Navigation Arrows */}
+      <div className={`flex gap-4 sm:gap-6 mt-6 ${isRTL ? "justify-start flex-row-reverse" : "justify-end"}`}>
         <FaArrowLeft
           onClick={handlePrev}
           className="border rounded-full text-[#4b2615] bg-white/50 text-2xl sm:text-4xl p-2 cursor-pointer hover:bg-white"

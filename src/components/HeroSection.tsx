@@ -2,19 +2,16 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { HeroData } from "@/lib/structuredData";
-import { useLanguage } from "@/components/LanguageContext"; 
+import { useLanguage } from "@/components/LanguageContext";
 
 interface HeroSectionProps {
-  data?: HeroData; 
+  data?: HeroData;
 }
 
 interface HeroAPIResponse {
   title?: string;
-  description?: { children: { text: string }[] }[] ;
-  backgroundImage?: {
-    url: string;
-    mime?: string;
-  };
+  description?: { children: { text: string }[] }[];
+  backgroundImage?: { url: string; mime?: string };
   image?: { url: string };
 }
 
@@ -24,6 +21,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
   const [current, setCurrent] = useState(0);
   const isRTL = language === "AR";
 
+  // Fetch Hero Data
   useEffect(() => {
     if (data) {
       setSlides([data]);
@@ -67,6 +65,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
     fetchHero();
   }, [language, data, isRTL]);
 
+  // Auto slider
   useEffect(() => {
     if (slides.length > 1) {
       const interval = setInterval(() => setCurrent(prev => (prev + 1) % slides.length), 5000);
@@ -83,18 +82,21 @@ export default function HeroSection({ data }: HeroSectionProps) {
       className="relative w-full min-h-[650px] md:min-h-[650px] flex items-center justify-center overflow-hidden"
       dir={isRTL ? "rtl" : "ltr"}
     >
+      {/* Background Image */}
       {background?.type === "image" && (
         <Image
           src={background.url}
           alt="Background"
           fill
           className="absolute inset-0 object-cover transition-opacity duration-700"
-          priority
-          quality={50}
+          priority={current === 0} 
+          quality={50} 
           placeholder="blur"
           blurDataURL="/Imgs/placeholder.png"
         />
       )}
+
+      {/* Background Video */}
       {background?.type === "video" && (
         <video
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
@@ -107,18 +109,22 @@ export default function HeroSection({ data }: HeroSectionProps) {
         />
       )}
 
+      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#4B2615AD] to-[#4B261547]"></div>
 
+      {/* Content */}
       <div
         className={`relative z-10 flex flex-col md:flex-row items-center justify-center gap-8 text-white max-w-5xl px-4 md:px-0 ${
           isRTL ? "text-right" : "text-left"
         }`}
       >
+        {/* Text */}
         <div className="w-full md:w-[700px] text-center md:text-left">
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 text-center">{title}</h1>
           <p className="text-sm sm:text-base md:text-lg">{description}</p>
         </div>
 
+        {/* Hero Image */}
         {image && (
           <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px] relative">
             <Image
@@ -126,7 +132,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
               alt="Hero image"
               fill
               className="object-cover rounded-xl shadow-lg bg-[#643F2E]"
-              priority
+              priority={current === 0} 
               quality={70}
               placeholder="blur"
               blurDataURL="/Imgs/placeholder.png"
@@ -135,6 +141,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
         )}
       </div>
 
+      {/* Slider Dots */}
       {slides.length > 1 && (
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-row gap-3 md:top-1/2 md:left-[3%] md:flex-col md:gap-4 z-20">
           {slides.map((_, idx) => (

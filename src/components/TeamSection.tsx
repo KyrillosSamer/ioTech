@@ -22,10 +22,7 @@ interface StrapiTeamMember {
   whatsapp?: string;
   phone?: string;
   email?: string;
-  image?: Array<{
-    url?: string;
-    formats?: { small?: { url?: string } };
-  }>;
+  image?: Array<{ url?: string; formats?: { small?: { url?: string } } }>;
 }
 
 export default function TeamSection() {
@@ -38,6 +35,7 @@ export default function TeamSection() {
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
   const locale = language === "AR" ? "ar" : "en";
 
+  // Fetch team members
   useEffect(() => {
     const fetchTeam = async () => {
       try {
@@ -71,6 +69,7 @@ export default function TeamSection() {
     fetchTeam();
   }, [locale]);
 
+  // Determine visible count based on screen size
   useEffect(() => {
     const updateVisibleCount = () => {
       if (typeof window === "undefined") return 3;
@@ -80,9 +79,8 @@ export default function TeamSection() {
     };
 
     setVisibleCount(updateVisibleCount());
-    const handleResize = () => setVisibleCount(updateVisibleCount());
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", () => setVisibleCount(updateVisibleCount()));
+    return () => window.removeEventListener("resize", () => setVisibleCount(updateVisibleCount()));
   }, []);
 
   const prevSlide = () => setIndex(index === 0 ? Math.max(team.length - visibleCount, 0) : index - 1);
@@ -114,7 +112,10 @@ export default function TeamSection() {
                 width={269}
                 height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
-                priority={idx === 0} // Only first visible image
+                priority={idx === 0} // First visible image priority
+                quality={70} // Reduce image size
+                placeholder="blur"
+                blurDataURL="/Imgs/person.png"
               />
             )}
             <h2 className="mt-3 text-lg font-semibold text-[#643F2E]">{member.name}</h2>
