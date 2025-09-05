@@ -94,7 +94,10 @@ export default function TeamSection() {
   if (loading) return <Loading />;
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto text-center mt-14  relative px-4 sm:px-6 lg:px-0">
+    <section
+      className="w-full max-w-[1400px] mx-auto text-center mt-14 relative px-4 sm:px-6 lg:px-0"
+      aria-label={language === "AR" ? "فريقنا" : "Our Team Section"}
+    >
       <h1 className="text-3xl sm:text-4xl text-[#643F2E] font-bold">
         {language === "AR" ? "فريقنا" : "Our Team"}
       </h1>
@@ -110,7 +113,7 @@ export default function TeamSection() {
             {member.image && (
               <Image
                 src={member.image}
-                alt={member.name}
+                alt={`Profile image of ${member.name}`}
                 width={269}
                 height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
@@ -119,22 +122,39 @@ export default function TeamSection() {
             <h2 className="mt-3 text-lg font-semibold text-[#643F2E]">{member.name}</h2>
             <p className="text-gray-500 text-sm">{member.position}</p>
             <div className="flex justify-center gap-4 mt-3 text-[#643F2E] text-xl mb-6">
-              <a href={`https://wa.me/${member.whatsapp}`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`https://wa.me/${member.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Chat with ${member.name} on WhatsApp`}
+              >
                 <FaWhatsapp className="hover:text-green-500 cursor-pointer" />
               </a>
-              <a href={`tel:${member.phone}`}><FaPhone className="hover:text-blue-500 cursor-pointer" /></a>
-              <a href={`mailto:${member.email}`}><FaEnvelope className="hover:text-red-500 cursor-pointer" /></a>
+              <a href={`tel:${member.phone}`} aria-label={`Call ${member.name}`}>
+                <FaPhone className="hover:text-blue-500 cursor-pointer" />
+              </a>
+              <a href={`mailto:${member.email}`} aria-label={`Email ${member.name}`}>
+                <FaEnvelope className="hover:text-red-500 cursor-pointer" />
+              </a>
             </div>
           </div>
         ))}
       </div>
 
-      <button onClick={prevSlide} className="absolute left-2 sm:left-10 top-1/2 -translate-y-1/2 bg-[#643F2E] text-white p-2 sm:p-3 rounded-full shadow-md hover:bg-[#4e3224]">
+      <button
+        onClick={prevSlide}
+        aria-label={language === "AR" ? "السابق" : "Previous team members"}
+        className="absolute left-2 sm:left-10 top-1/2 -translate-y-1/2 bg-[#643F2E] text-white p-2 sm:p-3 rounded-full shadow-md hover:bg-[#4e3224]"
+      >
         <FaArrowLeft />
       </button>
-      <button onClick={nextSlide} className="absolute right-2 sm:right-10 top-1/2 -translate-y-1/2 bg-[#643F2E] text-white p-2 sm:p-3 rounded-full shadow-md hover:bg-[#4e3224]">
+      <button
+        onClick={nextSlide}
+        aria-label={language === "AR" ? "التالي" : "Next team members"}
+        className="absolute right-2 sm:right-10 top-1/2 -translate-y-1/2 bg-[#643F2E] text-white p-2 sm:p-3 rounded-full shadow-md hover:bg-[#4e3224]"
+      >
         <FaArrowRight />
       </button>
-    </div>
+    </section>
   );
 }

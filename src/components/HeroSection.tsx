@@ -5,7 +5,7 @@ import { HeroData } from "@/lib/structuredData";
 import { useLanguage } from "@/components/LanguageContext"; 
 
 interface HeroSectionProps {
-  data?: HeroData; // Accepts HeroData as prop
+  data?: HeroData; 
 }
 
 interface HeroAPIResponse {
@@ -117,12 +117,13 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
   {/* Content */}
   <div
-    className={`relative z-10 flex flex-col md:flex-row items-center md:items-start justify-center gap-8 text-white max-w-5xl px-4 md:px-0 ${
+    className={`relative z-10 flex flex-col md:flex-row items-center md:items-start 
+      justify-center gap-8 text-white max-w-5xl px-4 md:px-0 ${
       isRTL ? "text-right" : "text-left"
     }`}
   >
     {/* Text */}
-    <div className="w-full md:w-[700px] text-center md:text-left">
+    <div className="w-full md:w-[700px] text-center md:text-left ">
       <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
         {title}
       </h1>

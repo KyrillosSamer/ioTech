@@ -3,113 +3,68 @@ import HeroSection from "@/components/HeroSection";
 import TeamSectionServer from "@/components/TeamSection";
 import ClientSectionServer from "@/components/Client";
 import { Suspense } from "react";
-import {
-  generateHeroJSONLD,
-  generateTeamJSONLD,
-  generateClientsJSONLD,
-  HeroData,
-  TeamMember,
-  Client,
-} from "@/lib/structuredData";
+import Loading from "@/components/Loading"; // ✅ استدعاء الكومبوننت
 
-// Generate dynamic metadata for SEO
-export async function generateMetadata() {
-  // استعمل revalidate عشان الـ data تتحفظ Cache ومتحملش كل مرة
-  const heroRes = await fetch(
-    "https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero",
-    { next: { revalidate: 60 } }
-  );
-  const heroData: { data?: HeroData } = await heroRes.json();
-
-  return {
-    title: heroData.data?.title || "IO Tech - Legal & Corporate Services",
+export const metadata = {
+  title: "IO-Tech | Digital Transformation & IT Solutions",
+  description:
+    "IO-Tech is a global IT company specializing in ERP, GIS, Cloud Solutions, and Digital Transformation. Offices in Dubai and Bangalore, delivering enterprise-grade technology services.",
+  keywords:
+    "IO-Tech, ERP solutions, GIS services, Cloud computing, Digital transformation, IT consulting, Dubai, Bangalore",
+  alternates: {
+    canonical: "https://www.i-o-tech.net/",
+  },
+  openGraph: {
+    title: "IO-Tech | Digital Transformation & IT Solutions",
     description:
-      heroData.data?.description?.slice(0, 160) ||
-      "Trusted legal & corporate services.",
-    openGraph: {
-      title: heroData.data?.title || "IO Tech - Legal & Corporate Services",
-      description:
-        heroData.data?.description?.slice(0, 160) ||
-        "Trusted legal & corporate services.",
-      url: "https://domain.com",
-      siteName: "IO Tech",
-      images: [
-        {
-          url: heroData.data?.image || "/Imgs/cover.jpg",
-          width: 1200,
-          height: 630,
-          alt: heroData.data?.title || "IO Tech Legal Services",
-        },
-      ],
-      locale: "en_US",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: heroData.data?.title || "IO Tech - Legal & Corporate Services",
-      description:
-        heroData.data?.description?.slice(0, 160) ||
-        "Trusted legal & corporate services.",
-      images: [heroData.data?.image || "/Imgs/cover.jpg"],
-    },
-  };
-}
+      "IO-Tech provides ERP, GIS, Cloud, and Digital Transformation solutions for enterprises across the globe.",
+    url: "https://www.i-o-tech.net/",
+    siteName: "IO-Tech",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "IO-Tech | Digital Transformation & IT Solutions",
+    description:
+      "ERP, GIS, Cloud Solutions, and Digital Transformation services.",
+  },
+};
 
-// Home Page Component
-export default async function Home() {
-  // ✅ رجّع بس HeroSection الأول (السكاشن التانية Suspense)
-  const heroRes = await fetch(
-    "https://tranquil-positivity-9ec86ca654.strapiapp.com/api/hero",
-    { next: { revalidate: 60 } }
-  );
-  const heroData: { data?: HeroData } = await heroRes.json();
-
-  // Team & Clients هيتجابوا في الكومبوننتس الخاصة بيهم Lazy
-  const teamRes = await fetch(
-    "https://tranquil-positivity-9ec86ca654.strapiapp.com/api/teams",
-    { next: { revalidate: 60 } }
-  );
-  const teamData: { data?: TeamMember[] } = await teamRes.json();
-
-  const clientsRes = await fetch(
-    "https://tranquil-positivity-9ec86ca654.strapiapp.com/api/clients",
-    { next: { revalidate: 60 } }
-  );
-  const clientsData: { data?: Client[] } = await clientsRes.json();
-
+export default function Home() {
   return (
     <>
-      {/* ✅ أول حاجة HeroSection */}
+      {/* Hero Section */}
       <HeroSection />
 
-      {/* ✅ باقي السكاشن Suspense */}
-      <Suspense fallback={<div className="text-center py-10">Loading team...</div>}>
+      {/* ✅ Suspense مع Loading Component */}
+      <Suspense fallback={<Loading />}>
         <TeamSectionServer />
       </Suspense>
 
-      <Suspense
-        fallback={<div className="text-center py-10">Loading clients...</div>}
-      >
+      <Suspense fallback={<Loading />}>
         <ClientSectionServer />
       </Suspense>
 
-      {/* ✅ SEO Structured Data */}
+      {/* ✅ Static JSON-LD for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateHeroJSONLD(heroData.data)),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateTeamJSONLD(teamData.data)),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateClientsJSONLD(clientsData.data)),
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "IO-Tech",
+            url: "https://www.i-o-tech.net/",
+            description:
+              "IO-Tech specializes in ERP, GIS, Cloud Solutions, and Digital Transformation services.",
+            contactPoint: {
+              "@type": "ContactPoint",
+              telephone: "+971-XXXXXXX",
+              contactType: "customer service",
+              availableLanguage: ["English", "Arabic"],
+            },
+            sameAs: ["https://www.linkedin.com/company/i-o-tech/"],
+          }),
         }}
       />
     </>
