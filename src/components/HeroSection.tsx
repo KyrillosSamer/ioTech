@@ -10,13 +10,16 @@ interface HeroSectionProps {
 
 interface HeroAPIResponse {
   title?: string;
-  description?: { children: { text: string }[] }[]; 
-  backgroundImage?: { url: string; mime?: string };
+  description?: { children: { text: string }[] }[] ;
+  backgroundImage?: {
+    url: string;
+    mime?: string;
+  };
   image?: { url: string };
 }
 
 export default function HeroSection({ data }: HeroSectionProps) {
-  const { language } = useLanguage(); 
+  const { language } = useLanguage();
   const [slides, setSlides] = useState<HeroData[]>([]);
   const [current, setCurrent] = useState(0);
   const isRTL = language === "AR";
@@ -34,11 +37,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
           `https://tranquil-positivity-9ec86ca654.strapiapp.com/api/heroes?populate=*&locale=${locale}`
         );
         const result = await res.json();
-
         const heroArray = Array.isArray(result?.data)
           ? result.data
           : [result?.data].filter(Boolean);
-
         if (!heroArray.length) return;
 
         const heroData: HeroData[] = heroArray.map((item: HeroAPIResponse) => ({
@@ -51,9 +52,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
           background: item.backgroundImage
             ? {
                 url: item.backgroundImage.url,
-                type: (item.backgroundImage.mime?.startsWith("video") ?? false)
-                  ? "video"
-                  : "image",
+                type: item.backgroundImage.mime?.startsWith("video") ? "video" : "image",
               }
             : null,
           image: item.image?.url || null,
@@ -70,9 +69,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
   useEffect(() => {
     if (slides.length > 1) {
-      const interval = setInterval(() => {
-        setCurrent(prev => (prev + 1) % slides.length);
-      }, 5000);
+      const interval = setInterval(() => setCurrent(prev => (prev + 1) % slides.length), 5000);
       return () => clearInterval(interval);
     }
   }, [slides]);
@@ -83,16 +80,19 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
   return (
     <section
-      className="relative w-full min-h-[85vh] md:h-[650px] flex items-center justify-center overflow-hidden"
+      className="relative w-full min-h-[650px] md:min-h-[650px] flex items-center justify-center overflow-hidden"
       dir={isRTL ? "rtl" : "ltr"}
-      aria-label={isRTL ? "قسم الهيرو" : "Hero Section"}
     >
       {background?.type === "image" && (
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-          style={{ backgroundImage: `url(${background.url})` }}
-          role="img"
-          aria-label="Hero background image"
+        <Image
+          src={background.url}
+          alt="Background"
+          fill
+          className="absolute inset-0 object-cover transition-opacity duration-700"
+          priority
+          quality={50}
+          placeholder="blur"
+          blurDataURL="/Imgs/placeholder.png"
         />
       )}
       {background?.type === "video" && (
@@ -102,31 +102,34 @@ export default function HeroSection({ data }: HeroSectionProps) {
           autoPlay
           muted
           loop
-          aria-label="Hero background video"
+          preload="metadata"
+          playsInline
         />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-[#4B2615AD] to-[#4B261547]" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4B2615AD] to-[#4B261547]"></div>
 
       <div
         className={`relative z-10 flex flex-col md:flex-row items-center justify-center gap-8 text-white max-w-5xl px-4 md:px-0 ${
           isRTL ? "text-right" : "text-left"
         }`}
       >
-        <div className={`w-full md:w-[700px] ${isRTL ? "text-right" : "text-left"}`}>
+        <div className="w-full md:w-[700px] text-center md:text-left">
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 text-center">{title}</h1>
           <p className="text-sm sm:text-base md:text-lg">{description}</p>
         </div>
 
         {image && (
-          <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px]">
+          <div className="w-[275px] sm:w-[300px] md:w-[374px] h-[275px] sm:h-[350px] md:h-[374px] relative">
             <Image
               src={image}
-              alt={title || "Hero image"}
-              width={374}
-              height={374}
-              className="w-full h-full object-cover rounded-xl shadow-lg bg-[#643F2E]"
+              alt="Hero image"
+              fill
+              className="object-cover rounded-xl shadow-lg bg-[#643F2E]"
               priority
+              quality={70}
+              placeholder="blur"
+              blurDataURL="/Imgs/placeholder.png"
             />
           </div>
         )}
@@ -141,7 +144,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 idx === current ? "bg-white" : "bg-white/50"
               }`}
               onClick={() => setCurrent(idx)}
-              aria-label={isRTL ? `الانتقال إلى الشريحة ${idx + 1}` : `Go to slide ${idx + 1}`}
+              aria-label={`Go to slide ${idx + 1}`}
             />
           ))}
         </div>
