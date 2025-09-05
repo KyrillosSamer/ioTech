@@ -15,13 +15,8 @@ interface StrapiClient {
   id: number;
   name?: string;
   position?: string;
-  feedback?: Array<{
-    children: Array<{ text: string }>;
-  }>;
-  image?: Array<{
-    formats?: { small?: { url?: string } };
-    url?: string;
-  }>;
+  feedback?: Array<{ children: Array<{ text: string }> }>;
+  image?: Array<{ formats?: { small?: { url?: string } }; url?: string }>;
 }
 
 export default function FeedBack() {
@@ -29,11 +24,12 @@ export default function FeedBack() {
   const [clients, setClients] = useState<Client[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const BASE_URL = "https://tranquil-positivity-9ec86ca654.strapiapp.com";
+  const isRTL = language === "AR";
 
   useEffect(() => {
     async function fetchClients() {
       try {
-        const locale = language === "AR" ? "ar" : "en";
+        const locale = isRTL ? "ar" : "en";
         const res = await fetch(`${BASE_URL}/api/clients?populate=image&locale=${locale}`);
         const data = await res.json();
 
@@ -56,12 +52,11 @@ export default function FeedBack() {
     }
 
     fetchClients();
-  }, [language]);
+  }, [language, isRTL]);
 
-  if (clients.length === 0) return <div className="p-10 text-center text-gray-700"></div>;
+  if (!clients.length) return <div className="p-10 text-center text-gray-700"></div>;
 
   const client = clients[currentIndex];
-  const isRTL = language === "AR";
 
   const handlePrev = () => setCurrentIndex(prev => (prev === 0 ? clients.length - 1 : prev - 1));
   const handleNext = () => setCurrentIndex(prev => (prev === clients.length - 1 ? 0 : prev + 1));
@@ -86,15 +81,18 @@ export default function FeedBack() {
 
       {/* Testimonial Content */}
       <div className={`flex flex-col md:flex-row items-center gap-6 md:gap-10`}>
-        {/* Image */}
-        <Image
-          src={client.img}
-          alt={client.name}
-          width={374}
-          height={374}
-          className={`w-full max-w-[300px] sm:max-w-[374px] h-[300px] sm:h-[374px] object-cover rounded-lg bg-[#643F2E] 
-            ${isRTL ? "order-2 md:order-1" : "order-1"}`}
-        />
+        <div className={`relative w-full max-w-[300px] sm:max-w-[374px] h-[300px] sm:h-[374px] ${isRTL ? "order-2 md:order-1" : "order-1"}`}>
+          <Image
+            src={client.img}
+            alt={client.name}
+            fill
+            className="object-cover rounded-lg bg-[#643F2E]"
+            priority
+            quality={70}
+            placeholder="blur"
+            blurDataURL="/Imgs/person.png"
+          />
+        </div>
 
         <div className={`w-full md:w-[728px] ${isRTL ? "order-1 md:order-2" : "order-2"}`}>
           <p className="opacity-60 mb-4 sm:mb-6 text-base sm:text-[24px]">{`"${client.feedback}"`}</p>

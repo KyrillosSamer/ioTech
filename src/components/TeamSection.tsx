@@ -24,9 +24,7 @@ interface StrapiTeamMember {
   email?: string;
   image?: Array<{
     url?: string;
-    formats?: {
-      small?: { url?: string };
-    };
+    formats?: { small?: { url?: string } };
   }>;
 }
 
@@ -73,17 +71,16 @@ export default function TeamSection() {
     fetchTeam();
   }, [locale]);
 
-  const getVisibleCount = () => {
-    if (typeof window !== "undefined") {
+  useEffect(() => {
+    const updateVisibleCount = () => {
+      if (typeof window === "undefined") return 3;
       if (window.innerWidth < 640) return 1;
       if (window.innerWidth < 1024) return 2;
-    }
-    return 3;
-  };
+      return 3;
+    };
 
-  useEffect(() => {
-    setVisibleCount(getVisibleCount());
-    const handleResize = () => setVisibleCount(getVisibleCount());
+    setVisibleCount(updateVisibleCount());
+    const handleResize = () => setVisibleCount(updateVisibleCount());
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -104,19 +101,20 @@ export default function TeamSection() {
       <p className="w-full sm:w-[500px] mx-auto mt-4 text-gray-600 text-sm sm:text-base">
         {language === "AR"
           ? "نحن فريق متخصص نسعى لتقديم أفضل الخدمات لعملائنا، مع التركيز على الجودة والاحترافية في كل مشروع."
-          : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur quasi et voluptatum quidem non expedita vitae."}
+          : "Our team of experts is dedicated to providing top-notch services with a focus on quality and professionalism."}
       </p>
 
       <div className="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-12 overflow-hidden">
-        {team.slice(index, index + visibleCount).map(member => (
+        {team.slice(index, index + visibleCount).map((member, idx) => (
           <div key={member.id} className="flex-shrink-0 w-[250px] sm:w-[250px] lg:w-[269px] mb-10">
             {member.image && (
               <Image
                 src={member.image}
-                alt={`Profile image of ${member.name}`}
+                alt={`Profile of ${member.name}`}
                 width={269}
                 height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
+                priority={idx === 0} // Only first visible image
               />
             )}
             <h2 className="mt-3 text-lg font-semibold text-[#643F2E]">{member.name}</h2>
