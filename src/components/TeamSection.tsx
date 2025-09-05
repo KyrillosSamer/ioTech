@@ -79,8 +79,9 @@ export default function TeamSection() {
     };
 
     setVisibleCount(updateVisibleCount());
-    window.addEventListener("resize", () => setVisibleCount(updateVisibleCount()));
-    return () => window.removeEventListener("resize", () => setVisibleCount(updateVisibleCount()));
+    const handleResize = () => setVisibleCount(updateVisibleCount());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const prevSlide = () => setIndex(index === 0 ? Math.max(team.length - visibleCount, 0) : index - 1);
@@ -112,10 +113,11 @@ export default function TeamSection() {
                 width={269}
                 height={184}
                 className="w-full h-[250px] sm:h-[180px] lg:h-[184px] object-cover rounded-lg shadow-md bg-[#643F2E]"
-                priority={idx === 0} // First visible image priority
-                quality={70} // Reduce image size
+                priority={idx === 0}
+                quality={70}
                 placeholder="blur"
                 blurDataURL="/Imgs/person.png"
+                loading="eager"
               />
             )}
             <h2 className="mt-3 text-lg font-semibold text-[#643F2E]">{member.name}</h2>

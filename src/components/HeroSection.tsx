@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { HeroData } from "@/lib/structuredData";
 import { useLanguage } from "@/components/LanguageContext";
@@ -74,7 +74,6 @@ export default function HeroSection({ data }: HeroSectionProps) {
   if (!slides.length) {
     return (
       <section className="relative w-full min-h-[650px] flex items-center justify-center bg-[#643F2E]">
-        <p className="text-white">Loading...</p>
       </section>
     );
   }
@@ -97,6 +96,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
           quality={50}
           placeholder="blur"
           blurDataURL="/Imgs/placeholder.png"
+          loading="eager"
         />
       )}
 
@@ -137,6 +137,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
               quality={70}
               placeholder="blur"
               blurDataURL="/Imgs/placeholder.png"
+              loading="eager"
             />
           </div>
         )}
